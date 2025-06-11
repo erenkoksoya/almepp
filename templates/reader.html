@@ -336,8 +336,7 @@ Aşağıdaki kodu <body> açıldıktan ve <div id="themebar"> ile <div id="fontb
     <!-- Hangi sayfadasın etiketi -->
     <div id="current-page-label" style="display:none;"></div>
     <!-- Metin -->
-    
-    <div id="text-content" style="padding-top: 52px; position: relative;">
+    <div id="text-content" style="padding-top: 60px; position: relative;">
 
   <!-- Sabit Üst Çubuk -->
   <div style="
@@ -350,6 +349,7 @@ Aşağıdaki kodu <body> açıldıktan ve <div id="themebar"> ile <div id="fontb
       padding: 8px 16px;
       display: flex;
       align-items: center;
+      justify-content: flex-start;
       box-shadow: 0 1px 4px rgba(0,0,0,0.1);
   ">
     <span class="page-speaker" title="Sayfayı oku" onclick="speakPage(currentPageIndex)"
@@ -362,11 +362,42 @@ Aşağıdaki kodu <body> açıldıktan ve <div id="themebar"> ile <div id="fontb
   </div>
 
   {% for page in pages %}
-    <div class="page" id="page-{{ loop.index0 }}">
+    <div class="page" id="page-{{ loop.index0 }}" style="padding: 12px;">
         {{ page|safe }}
     </div>
   {% endfor %}
+
 </div>
+
+<script>
+  let currentPageIndex = 0;
+
+  function updatePageNumberDisplay(index) {
+    const display = document.getElementById('page-number-display');
+    if (display) {
+      display.textContent = "Sayfa " + (index + 1);
+    }
+    currentPageIndex = index;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    updatePageNumberDisplay(0);
+  });
+
+  function speakPage(index) {
+    const page = document.getElementById('page-' + index);
+    if (page) {
+      const text = page.innerText || page.textContent;
+      const utterance = new SpeechSynthesisUtterance(text);
+      speechSynthesis.speak(utterance);
+    }
+  }
+
+  function stopSpeak() {
+    speechSynthesis.cancel();
+  }
+</script>
+
     
 
     <!-- Kelime Pop-up -->
