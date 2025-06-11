@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Kelime Geçmişi</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <header>
+        <a href="{{ url_for('index') }}" class="back-btn">← Kitaplığa Dön</a>
+        <h2>Kelime Geçmişi</h2>
+        <a href="/clear_history" class="clear-btn">Temizle</a>
+    </header>
+    <main>
+        <ul class="history-list">
+            {% for h in history %}
+                <li>
+                    <b>{{ h.word }}</b>
+                    ({{ h.lemma }}) – <i>{{ h.anlam }}</i>
+                </li>
+            {% else %}
+                <li>Henüz kelime yok.</li>
+            {% endfor %}
+        </ul>
+    </main>
+</body>
+</html>

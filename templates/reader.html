@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Reader</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>  
+
+              :root {
+    --main-bg: #ededed;
+    --page-bg: #fff;
+    --text-color: #1c1c1c;
+}
+
+body {
+    background: var(--main-bg);
+    color: var(--text-color);
+    margin: 0;
+    font-family: 'Segoe UI', 'Inter', 'Arial', sans-serif;
+}
+
+/* RENK BARINI ÜSTE SABİTLE */
+#themebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    z-index: 10001;
+    background: #fff;
+    border-radius: 0 0 18px 18px;
+    box-shadow: 0 2px 10px #0001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 20px;
+}
+
+/* Font bar üstte (renk barı ile aynı hizadan başlatıyoruz) */
+#fontbar {
+    position: fixed;
+    top: 54px; /* themebar'ın altında gözüksün */
+    left: 18px;
+    z-index: 1001;
+    background: #fff;
+    border-radius: 13px;
+    box-shadow: 0 2px 8px #b2b8c766;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 10px 4px 7px;
+    opacity: .97;
+}
+
+#themebar button, #fontbar button {
+    padding: 4px 10px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1em;
+}
+#themebar .active, #fontbar .active {
+    background: #2e6be6;
+    color: #fff;
+}
+
+/* Sağ alta utility bar */
+#utility-bar {
+    position: fixed;
+    right: 24px;
+    bottom: 28px;
+    z-index: 1200;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px #b2b8c766;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 8px;
+    opacity: 0.97;
+}
+
+/* Okuma alanının üstünde boşluk bırak */
+#text-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 34px;
+    padding: 38px 0 60px 0;
+    min-height: 100vh;
+    margin-top: 65px; /* themebar yüksekliği kadar */
+}
+
+/* Sayfa kutusu */
+.page {
+    background: var(--page-bg);
+    border-radius: 7px;
+    box-shadow: 0 0 20px 1.5px #d0d4db;
+    padding: 50px 44px 38px 44px;
+    font-size: 1.15em;
+    line-height: 1.65;
+    min-height: 430px;
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+}
+.page-num {
+    position: absolute;
+    left: 24px;
+    top: 17px;
+    color: #9ea6bd;
+    font-size: .97em;
+    opacity: .8;
+    letter-spacing: .5px;
+    font-weight: 600;
+}
+.page-speaker,
+.page-stop {
+    position: absolute;
+    right: 54px;
+    top: 13px;
+    cursor: pointer;
+    font-size: 1.22em;
+    color: #366be6;
+}
+.page-stop {
+    right: 20px;
+    color: #de3a3a;
+    font-size: 1.15em;
+}
+
+/* Alıntı barı (seçili metin) */
+#quote-bar {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1201;
+    background: #f5e7fd;
+    padding: 9px 20px;
+    border-radius: 12px;
+    box-shadow: 0 1px 8px #b2b8c790;
+}
+
+/* Sayfa atlama kutusu */
+#jumper {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 1002;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 8px #b2b8c74a;
+    padding: 7px 15px 7px 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+#jumper input {
+    width: 55px;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    font-size: 1.1em;
+    padding: 3px 6px;
+}
+#jumper button {
+    background: #2e6be6;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    padding: 3px 15px;
+    font-size: 1em;
+    cursor: pointer;
+}
+#current-page-label {
+    position: fixed;
+    right: 24px;
+    bottom: 22px;
+    z-index: 1002;
+    background: #24292f;
+    color: #fff;
+    padding: 9px 16px 9px 14px;
+    border-radius: 16px;
+    box-shadow: 0 1px 10px #b2b8c790;
+    font-size: 1.07em;
+    font-weight: 600;
+    opacity: .93;
+    pointer-events: none;
+    transition: opacity .15s;
+}
+
+/* Responsive (mobil ve tablet) */
+@media (max-width:900px) {
+    #themebar { position: static; width: auto; border-radius: 0; box-shadow: none; justify-content: flex-start; padding: 7px 7vw 8px 7vw; }
+    #fontbar { position: static; margin-bottom: 8px; }
+    #jumper { position: static; margin-bottom: 8px; }
+    #utility-bar { right: 12px; bottom: 12px; }
+    #text-content { padding: 15px 0 32px 0; margin-top: 10px; }
+    .page { padding: 18px 2vw 22px 2vw; max-width: 99vw; min-height: 180px; }
+    #current-page-label { left: 50%; right: auto; bottom: 10px; transform: translateX(-50%);}
+    .page-speaker, .page-stop { right: 48px; top: 12px;}
+}
+
+/* Word Popup */
+#word-popup {
+    display: none;
+    position: absolute;
+    background: #24292f;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(20,20,20,0.18);
+    z-index: 9999;
+    min-width: 100px;
+    max-width: 350px;
+    word-break: break-word;
+    font-size: 1.03em;
+    transition: opacity 0.1s;
+}
+#word-popup .close-btn { float: right; cursor: pointer; margin-left: 10px; font-weight: bold;}
+#word-popup .popup-speaker { cursor:pointer;font-size:1.12em;margin-right:7px;color:#36c;vertical-align:middle;}
+#word-popup .star-fav { cursor:pointer;font-size:1.1em;color:#ffc500;margin-right:7px;vertical-align:middle; }
+#word-popup .edit-note { cursor:pointer;font-size:1.1em;color:#28a745;margin-left:8px;vertical-align:middle;}
+
+/* Modal stilleri */
+#favorites-modal, #sources-modal, #stats-modal, #note-modal, #translate-modal, #quotes-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #1118;
+    z-index: 10001;
+    align-items: center;
+    justify-content: center;
+}
+.modal-content {
+    background: #fff;
+    border-radius: 17px;
+    box-shadow: 0 6px 32px #2228;
+    min-width: 280px;
+    max-width: 355px;
+    width: 92vw;
+    max-height: 420px;
+    overflow-y: auto;
+    position: relative;
+    padding: 23px 17px 17px 17px;
+}
+.modal-content h3 { margin: 0 0 12px 0; font-weight: 600; color: #234; font-size: 1.15em;}
+.close-modal { position: absolute; top: 7px; right: 13px; cursor: pointer; font-size: 1.35em; color: #666; }
+.fav-list-item { margin-bottom: 13px; border-bottom: 1px solid #e3e6eb; padding-bottom: 7px;}
+.fav-note { display: block; font-size: .98em; color: #18b; margin: 5px 0 0 0;}
+.fav-tag { font-size: .96em; color: #aaa; margin-left: 6px; }
+.tag-select { border-radius: 7px; padding: 3px 8px; font-size: 1em;}
+#stats-content { font-size: 1.04em; line-height: 1.55; }
+.btn { background: #e2ecfa; color: #225; padding: 5px 14px; border: none; border-radius: 6px; font-size: 1em; cursor: pointer;}
+.btn-red { background: #fadede; color: #d44; }
+
+        
+
+
+
+
+    </style>
+</head>
+<body>
+
+    <!-- Tema seçici -->
+    <div id="themebar">
+        <span style="color:#888; font-weight:500;">Renk:</span>
+        <button id="lightBtn" onclick="setTheme('light')">Açık</button>
+        <button id="greyBtn" onclick="setTheme('grey')">Gri</button>
+        <button id="darkBtn" onclick="setTheme('dark')">Koyu</button>
+        <button onclick="showStatsModal()" style="margin-left:12px;padding:5px 10px 5px 9px;background:#e8ebfd;">📈 İstatistik</button>
+        <button onclick="showFavoritesModal()" style="margin-left:4px;padding:5px 10px;background:#fff5e3;">★ Favorilerim</button>
+    </div>
+
+<!-- Quote Bar (Seçili Metin için Alıntı) -->
+<div id="quote-bar" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:1201; background:#f5e7fd; padding:9px 20px; border-radius:12px; box-shadow:0 1px 8px #b2b8c790;">
+    <span id="selected-quote-text"></span>
+    <button id="add-quote-btn" style="margin-left:20px;">➕ Alıntı Ekle</button>
+</div>
+
+
+
+
+
+    <!-- Font büyüt/küçült -->
+    <div id="fontbar">
+        <button id="decfont" onclick="setFont('decrease')">A-</button>
+        <button id="incfont" onclick="setFont('increase')">A+</button>
+        <button onclick="showTranslateModal()" style="margin-left:12px;padding:5px 10px 5px 9px;background:#e7f3e3;">🌐 Seçili Metni Çevir</button>
+    </div>
+
+     <!--
+== EKLEME 1 ==
+
+
+
+
+Aşağıdaki kodu <body> açıldıktan ve <div id="themebar"> ile <div id="fontbar"> bittikten hemen SONRA ekle.
+-->
+
+<!-- Sağ altta utility bar -->
+<div id="utility-bar">
+<div id="utility-bar" style="position:fixed; right:24px; bottom:60px; z-index:1200; background:#fff; border-radius:14px; box-shadow:0 2px 8px #b2b8c766; display:flex; flex-direction:column; gap:10px; padding:10px 8px; opacity:0.97;">
+    <button id="bookshelf-btn" title="Kitaplık" style="font-size:1.08em; padding:7px 12px; border-radius:9px; border:none; background:#ecf4ff; cursor:pointer;">📚</button>
+    <button id="fav-btn" title="Favorilerim" style="font-size:1.08em; padding:7px 12px; border-radius:9px; border:none; background:#fffbe3; cursor:pointer;">⭐</button>
+    <button id="quotes-btn" title="Alıntılarım" style="font-size:1.08em; padding:7px 12px; border-radius:9px; border:none; background:#f5e7fd; cursor:pointer;">📖</button>
+</div>
+
+</div>
+
+
+    <!-- Sayfa atlama -->
+    <div id="jumper">
+        <span style="color:#2e6be6;font-weight:600;">Sayfaya Git:</span>
+        <input type="number" id="jumptopage" min="1" max="{{ page_count }}" placeholder="1-{{ page_count }}">
+        <button onclick="jumpToPage()">Git</button>
+    </div>
+    <!-- Hangi sayfadasın etiketi -->
+    <div id="current-page-label" style="display:none;"></div>
+    <!-- Metin -->
+    <div id="text-content">
+        {% for page in pages %}
+            <div class="page" id="page-{{ loop.index0 }}">
+                <div class="page-num">Sayfa {{ loop.index }}</div>
+                <span class="page-speaker" title="Sayfayı oku" onclick="speakPage({{ loop.index0 }})">🔊</span>
+                <span class="page-stop" title="Okumayı Durdur" onclick="stopSpeak()">⏹️</span>
+                {{ page|safe }}
+            </div>
+        {% endfor %}
+    </div>
+    <!-- Kelime Pop-up -->
+    <div id="word-popup"><span class="close-btn" onclick="hidePopup()">×</span><span id="popup-content"></span></div>
+
+    <!-- MODALS -->
+    <!-- Dış Kaynaklar Modalı -->
+    <div id="sources-modal">
+      <div class="modal-content">
+        <span class="close-modal" onclick="closeSourcesModal()">×</span>
+        <h3>Dış Kaynaklarda Ara</h3>
+        <div id="sources-links"></div>
+      </div>
+    </div>
+    <!-- Favoriler Modalı -->
+    <div id="favorites-modal">
+      <div class="modal-content">
+        <span class="close-modal" onclick="closeFavoritesModal()">×</span>
+        <h3>★ Favori Kelimeler</h3>
+        <div id="favorites-list"></div>
+        <button class="btn btn-red" onclick="clearFavorites()">Tüm Favorileri Sil</button>
+      </div>
+    </div>
+    <!-- İstatistik Modalı -->
+    <div id="stats-modal">
+      <div class="modal-content">
+        <span class="close-modal" onclick="closeStatsModal()">×</span>
+        <h3>📈 Okuma İstatistikleri</h3>
+        <div id="stats-content"></div>
+      </div>
+    </div>
+    <!-- Not Ekle Modalı -->
+    <div id="note-modal">
+      <div class="modal-content">
+        <span class="close-modal" onclick="closeNoteModal()">×</span>
+        <h3>📝 Notunu Ekle</h3>
+        <div id="note-form"></div>
+      </div>
+    </div>
+    <!-- Seçili Metni Çevir Modalı -->
+    <div id="translate-modal">
+      <div class="modal-content">
+        <span class="close-modal" onclick="closeTranslateModal()">×</span>
+        <h3>🌐 Seçili Metni Çevir</h3>
+        <div id="translate-area"></div>
+      </div>
+    </div>
+
+     <!-- Alıntılarım Modalı -->
+<div id="quotes-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#1118; z-index:10001; align-items:center; justify-content:center;">
+  <div class="modal-content">
+    <span class="close-modal" onclick="closeQuotesModal()">×</span>
+    <h3>📖 Alıntılarım</h3>
+    <div id="quotes-list"></div>
+  </div>
+</div>
+
+
+    <!-- SCRIPTLER -->
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+    <script>
+        // ========== Tema, Font, Sayfa Atlama, Scroll Sayfa, Sesli Okuma, Modal Açma-Kapama Fonksiyonları ==========
+        // ... (BURAYA ÖNCEKİ reader.html'de kullandığın ana JS fonksiyonlarını ekle! Kendi scroll, tema ve sayfa işlevlerini aynen kullanabilirsin.)
+    </script>
+    <script>
+    // ========== KELİME POPUP İŞLEVLERİ ==========
+    // Pop-up'ta favori, not ekleme, gelişmiş ses, kaynak modalı, istatistik vs. 
+    // ... (BU KISMI EN İYİ ŞEKİLDE ENTEGRE ETMEK İÇİN, ÖNCE reader.html JS KISMINI VE app.js'yi GÜNCELLEMEK GEREKİR.)
+
+    // *** Buraya, her kelimeye tıklandığında kelime popup'ı, favori ekleme, not ekleme, anlam yoksa dış kaynaklar vs. için gerekli kodları ekleyeceğiz. ***
+    // *** Kodlar uzun olduğu için buraya sığmadı, dilersen hemen "tamamını devam ettir" de, JS kodlarının tamamını paylaşayım. ***
+
+    // Not: Tüm favoriler, notlar, istatistikler localStorage'da tutulacak.
+    </script>
+
+<script>
+document.addEventListener("mouseup", function() {
+    let txt = window.getSelection().toString().trim();
+    let bar = document.getElementById("quote-bar");
+    if (txt.length > 2) {
+        document.getElementById("selected-quote-text").textContent = txt.length > 100 ? txt.substr(0,100)+"..." : txt;
+        bar.style.display = "block";
+    } else {
+        bar.style.display = "none";
+    }
+});
+document.getElementById("add-quote-btn").onclick = function() {
+    let txt = window.getSelection().toString().trim();
+    if (!txt) return;
+    let arr = JSON.parse(localStorage.getItem("alinanAlintilar") || "[]");
+    let note = prompt("Bu alıntı için not eklemek ister misin? (İsteğe bağlı)", "");
+    arr.unshift({text: txt, note: note||"", date: new Date().toLocaleString()});
+    localStorage.setItem("alinanAlintilar", JSON.stringify(arr));
+    document.getElementById("quote-bar").style.display = "none";
+    alert("Alıntı eklendi!");
+};
+</script>
+
+
+
+
+
+    <!--
+== EKLEME 4 ==
+Aşağıdaki script bloğunu, tüm <script> taglerinin en sonuna veya ayrı app.js dosyanın en sonuna ekle.
+-->
+
+<script>
+// === ALINTILAR === //
+function getQuotes() { return JSON.parse(localStorage.getItem("alinanAlintilar") || "[]"); }
+function saveQuotes(arr) { localStorage.setItem("alinanAlintilar", JSON.stringify(arr)); }
+
+document.addEventListener("mouseup", function() {
+    let txt = window.getSelection().toString().trim();
+    let bar = document.getElementById("quote-bar");
+    if (txt.length > 2) {
+        document.getElementById("selected-quote-text").textContent = txt.length > 100 ? txt.substr(0,100)+"..." : txt;
+        bar.style.display = "block";
+    } else {
+        bar.style.display = "none";
+    }
+});
+
+document.getElementById("add-quote-btn").onclick = function() {
+    let txt = window.getSelection().toString().trim();
+    if (!txt) return;
+    let arr = getQuotes();
+    let note = prompt("Bu alıntı için not eklemek ister misin? (İsteğe bağlı)", "");
+    arr.unshift({text: txt, note: note||"", date: new Date().toLocaleString()});
+    saveQuotes(arr);
+    document.getElementById("quote-bar").style.display = "none";
+    alert("Alıntı eklendi!");
+};
+
+document.getElementById("quotes-btn").onclick = function() {
+    let arr = getQuotes();
+    let html = arr.length==0 ? "<div>Henüz alıntı eklemedin.</div>" :
+      arr.map(q=>`
+        <div style="border-bottom:1px solid #eee;padding:7px 0 8px 0;">
+            <div style="font-size:1.07em;margin-bottom:7px;">"${q.text}"</div>
+            <div style="font-size:.97em;color:#555;">${q.note?'<b>Not:</b> '+q.note+'<br>':''}<span style="color:#888;font-size:.96em;">${q.date}</span></div>
+        </div>
+      `).join("");
+    html += arr.length? `<button class="btn btn-red" onclick="clearQuotes()" style="margin-top:9px;">Tümünü Sil</button>` : "";
+    document.getElementById("quotes-list").innerHTML = html;
+    document.getElementById("quotes-modal").style.display = "flex";
+};
+function closeQuotesModal() { document.getElementById("quotes-modal").style.display="none"; }
+function clearQuotes() {
+    if (confirm("Tüm alıntıları silmek istediğine emin misin?")) {
+        saveQuotes([]);
+        document.getElementById("quotes-modal").style.display="none";
+    }
+}
+
+// Utility Bar Butonları (Favori, İstatistik, Alıntı)
+document.getElementById("fav-btn").onclick = showFavoritesModal;
+document.getElementById("stats-btn").onclick = showStatsModal;
+</script>
+
+
+    
+
+
+
+  <script>
+
+
+/* === TEMA, FONT, SAYFA ATLAMA, SAYFA TAKİP === */
+function setTheme(mode) {
+    document.getElementById('lightBtn').classList.remove('active');
+    document.getElementById('greyBtn').classList.remove('active');
+    document.getElementById('darkBtn').classList.remove('active');
+    if (mode === 'light') {
+        document.body.style.setProperty('--main-bg', '#ededed');
+        document.body.style.setProperty('--page-bg', '#fff');
+        document.body.style.setProperty('--text-color', '#1c1c1c');
+        document.getElementById('lightBtn').classList.add('active');
+    }
+    if (mode === 'grey') {
+        document.body.style.setProperty('--main-bg', '#d2d6db');
+        document.body.style.setProperty('--page-bg', '#f7f8fa');
+        document.body.style.setProperty('--text-color', '#1c1c1c');
+        document.getElementById('greyBtn').classList.add('active');
+    }
+    if (mode === 'dark') {
+        document.body.style.setProperty('--main-bg', '#202329');
+        document.body.style.setProperty('--page-bg', '#282c35');
+        document.body.style.setProperty('--text-color', '#f1f2f7');
+        document.getElementById('darkBtn').classList.add('active');
+    }
+    localStorage.setItem('theme', mode);
+}
+setTheme(localStorage.getItem('theme') || 'light');
+
+// Font büyüt/küçültme
+let fontSize = parseFloat(localStorage.getItem('fontsize')) || 1.15;
+function setFont(action) {
+    if (action === 'increase') fontSize += 0.08;
+    if (action === 'decrease') fontSize = Math.max(0.8, fontSize - 0.08);
+    document.querySelectorAll('.page').forEach(p => p.style.fontSize = fontSize + "em");
+    localStorage.setItem('fontsize', fontSize);
+}
+setFont();
+
+// Sayfaya git
+function jumpToPage() {
+    let val = parseInt(document.getElementById('jumptopage').value);
+    if (!val || val < 1) val = 1;
+    if (val > {{ page_count }}) val = {{ page_count }};
+    const idx = val - 1;
+    const target = document.getElementById('page-' + idx);
+    if (target) {
+        target.scrollIntoView({behavior: "smooth", block:"start"});
+    }
+}
+document.getElementById('jumptopage').addEventListener('keydown', function(e) {
+    if (e.key === "Enter") jumpToPage();
+});
+
+// Aktif sayfa scroll ile otomatik göster
+function getCurrentPage() {
+    const pages = document.querySelectorAll('.page');
+    let current = 1;
+    let minDiff = Infinity;
+    let winTop = window.scrollY;
+    pages.forEach((pg, i) => {
+        const rect = pg.getBoundingClientRect();
+        const diff = Math.abs(rect.top - 80);
+        if (diff < minDiff) {
+            minDiff = diff;
+            current = i+1;
+        }
+    });
+    return current;
+}
+let label = document.getElementById('current-page-label');
+function showPageLabel() {
+    let c = getCurrentPage();
+    label.textContent = "Sayfa " + c + " / {{ page_count }}";
+    label.style.display = "block";
+    clearTimeout(label.timer);
+    label.timer = setTimeout(() => label.style.display = "none", 1300);
+}
+window.addEventListener('scroll', showPageLabel);
+
+/* === GELİŞMİŞ SESLİ OKUMA (Sayfa ve Kelime) === */
+window.speakPage = function(idx) {
+    let page = document.getElementById('page-' + idx);
+    if (!page) return;
+    let words = Array.from(page.querySelectorAll('.word')).map(e => e.textContent);
+    let text = words.join(' ');
+    const utter = new window.SpeechSynthesisUtterance(text);
+    utter.lang = 'de-DE';
+    utter.rate = parseFloat(localStorage.getItem("ttsRate")) || 1.0;
+    utter.voice = getVoice();
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utter);
+};
+window.stopSpeak = function() { window.speechSynthesis.cancel(); };
+
+// Ses seçimi ve hız kontrolü
+function getVoice(gender="any") {
+    let voices = window.speechSynthesis.getVoices().filter(v=>v.lang.startsWith('de'));
+    if (gender==="male") return voices.find(v=>v.name.toLowerCase().includes("male")) || voices[0];
+    if (gender==="female") return voices.find(v=>v.name.toLowerCase().includes("female")) || voices[0];
+    return voices[0];
+}
+function setTTSRate(rate) { localStorage.setItem("ttsRate", rate); }
+
+/* === FAVORİ, NOT, İSTATİSTİK, DIŞ KAYNAK, POPUP, ÇEVİRME, ETİKET SİSTEMİ === */
+// Local storage için yardımcı fonksiyonlar
+function getFavs() { return JSON.parse(localStorage.getItem("favoriKelimeler") || "[]"); }
+function saveFavs(favs) { localStorage.setItem("favoriKelimeler", JSON.stringify(favs)); }
+function getStats() { return JSON.parse(localStorage.getItem("okumaIstatistik") || "{}"); }
+function saveStats(stats) { localStorage.setItem("okumaIstatistik", JSON.stringify(stats)); }
+
+// Pop-up event delegation
+document.addEventListener("DOMContentLoaded", function() {
+    // Kelimeye tıklama
+    document.getElementById('text-content').addEventListener('click', async function(event) {
+        let target = event.target;
+        if (target.classList.contains('word')) {
+            const word = target.textContent.trim();
+            let response = await fetch('/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ word: word })
+            });
+            let data = await response.json();
+            showWordPopup(target, data);
+            updateStats(word);
+        }
+    });
+});
+
+function showWordPopup(target, data) {
+    const popup = document.getElementById('word-popup');
+    const popupContent = document.getElementById('popup-content');
+    let favs = getFavs();
+    let isFav = favs.some(f => f.kelime === data.word);
+    let myNote = (favs.find(f=>f.kelime===data.word)||{}).not || "";
+    let myTag = (favs.find(f=>f.kelime===data.word)||{}).etiket || "";
+    popupContent.innerHTML = `
+        <span class="popup-speaker" title="Oku" onclick="playWord('${data.word}')">🔊</span>
+        <span class="star-fav" title="Favorilere ekle" onclick="toggleFav('${data.word}','${(data.anlam||"-").replace(/'/g,"")}')">${isFav?"★":"☆"}</span>
+        <strong>${data.word}</strong>
+        <span style="color:#aaf;">${data.artikel||""}</span>
+        <span class="edit-note" onclick="openNoteModal('${data.word}')">📝</span>
+        <span style="float:right;">
+          <select class="tag-select" onchange="setFavTag('${data.word}',this.value)">
+            <option value="">Etiket seç</option>
+            <option value="günlük" ${myTag==="günlük"?"selected":""}>Günlük</option>
+            <option value="bilim" ${myTag==="bilim"?"selected":""}>Bilim</option>
+            <option value="fiil" ${myTag==="fiil"?"selected":""}>Fiil</option>
+            <option value="edebi" ${myTag==="edebi"?"selected":""}>Edebi</option>
+          </select>
+        </span>
+        <br>
+        <em>${data.lemma ? '['+data.lemma+']' : ''}</em><br>
+        <span>${data.anlam || 'Anlam bulunamadı.'}</span>
+        ${myNote?`<div class="fav-note">Not: ${myNote}</div>`:""}
+    `;
+    // Eğer anlam bulunamadıysa, dış kaynaklar butonu
+    if (data.anlam === "-" || data.error) {
+        popupContent.innerHTML += `<br><button class="btn" onclick="showSourcesModal('${data.word}')">Daha fazla kaynak…</button>`;
+    }
+    // Konumlandırma
+    popup.style.display = "none"; popup.style.opacity = 0;
+    const rect = target.getBoundingClientRect();
+    const scrollY = window.scrollY || document.documentElement.scrollTop;
+    const scrollX = window.scrollX || document.documentElement.scrollLeft;
+    let top = rect.bottom + scrollY + 6;
+    let left = rect.left + scrollX;
+    if (left + popup.offsetWidth > window.innerWidth) left = window.innerWidth - popup.offsetWidth - 15;
+    if (top + popup.offsetHeight > window.innerHeight + scrollY) top = rect.top + scrollY - popup.offsetHeight - 10;
+    popup.style.left = `${left}px`; popup.style.top = `${top}px`;
+    popup.style.display = "block"; setTimeout(()=>popup.style.opacity=1,10);
+}
+function hidePopup() { document.getElementById('word-popup').style.display = "none"; }
+
+// Kelime okuma
+window.playWord = function(word) {
+    function speakNow() {
+        const utter = new window.SpeechSynthesisUtterance(word);
+        utter.lang = 'de-DE';
+        utter.voice = getVoice();
+        utter.rate = parseFloat(localStorage.getItem("ttsRate")) || 1.0;
+        window.speechSynthesis.cancel(); window.speechSynthesis.speak(utter);
+    }
+    if (window.speechSynthesis.getVoices().length) speakNow();
+    else setTimeout(()=>speakNow(), 400);
+};
+
+// Favori ekle/çıkar
+window.toggleFav = function(word, anlam) {
+    let favs = getFavs();
+    let ix = favs.findIndex(f=>f.kelime===word);
+    if (ix<0) favs.push({kelime:word, anlam:anlam, not:"", etiket:""});
+    else favs.splice(ix,1);
+    saveFavs(favs);
+    hidePopup();
+};
+// Etiket güncelle
+window.setFavTag = function(word, val) {
+    let favs = getFavs();
+    let ix = favs.findIndex(f=>f.kelime===word);
+    if (ix>=0) { favs[ix].etiket = val; saveFavs(favs);}
+};
+// Not ekle modalı aç
+window.openNoteModal = function(word) {
+    let favs = getFavs(), ix = favs.findIndex(f=>f.kelime===word);
+    if (ix<0) {favs.push({kelime:word, anlam:"-", not:"", etiket:""}); ix=favs.length-1;}
+    let note = favs[ix].not||"";
+    document.getElementById("note-form").innerHTML = `
+      <div style="font-weight:600;margin-bottom:8px;">Kelime: <span style="color:#26a">${word}</span></div>
+      <textarea id="usernote" style="width:98%;height:50px;font-size:1.07em;border-radius:8px;">${note}</textarea>
+      <br>
+      <button class="btn" onclick="saveNote('${word}')">Kaydet</button>
+    `;
+    document.getElementById("note-modal").style.display = "flex";
+};
+window.saveNote = function(word) {
+    let favs = getFavs(), ix = favs.findIndex(f=>f.kelime===word);
+    if (ix<0) return;
+    favs[ix].not = document.getElementById("usernote").value;
+    saveFavs(favs);
+    document.getElementById("note-modal").style.display = "none";
+};
+
+// Favoriler modalı
+window.showFavoritesModal = function() {
+    let favs = getFavs();
+    let html = favs.length==0 ? "<div>Hiç favori kelimen yok.</div>" :
+      favs.map(f=>`
+        <div class="fav-list-item">
+            <b>${f.kelime}</b> <span class="fav-tag">${f.etiket||""}</span>
+            <div>${f.anlam||""}</div>
+            ${f.not?`<div class="fav-note">Not: ${f.not}</div>`:""}
+            <button class="btn btn-red" style="margin-top:4px" onclick="removeFav('${f.kelime}')">Sil</button>
+        </div>
+      `).join("");
+    document.getElementById("favorites-list").innerHTML = html;
+    document.getElementById("favorites-modal").style.display = "flex";
+};
+window.removeFav = function(word) {
+    let favs = getFavs();
+    favs = favs.filter(f=>f.kelime!==word);
+    saveFavs(favs);
+    showFavoritesModal();
+};
+window.clearFavorites = function() {
+    if (confirm("Tüm favorileri silmek istediğine emin misin?")) {
+        saveFavs([]);
+        showFavoritesModal();
+    }
+};
+window.closeFavoritesModal = function() { document.getElementById("favorites-modal").style.display="none"; };
+
+// Dış kaynak modalı
+window.showSourcesModal = function(word) {
+    const links = [
+        {name:"Google Translate", url:`https://translate.google.com/?sl=de&tl=tr&text=${encodeURIComponent(word)}&op=translate`},
+        {name:"PONS", url:`https://de.pons.com/übersetzung/deutsch-tuerkisch/${encodeURIComponent(word)}`},
+        {name:"DWDS", url:`https://www.dwds.de/wb/${encodeURIComponent(word)}`},
+        {name:"Duden", url:`https://www.duden.de/rechtschreibung/${encodeURIComponent(word)}`},
+        {name:"Leo", url:`https://dict.leo.org/german-turkish/${encodeURIComponent(word)}`},
+        {name:"Linguee", url:`https://www.linguee.com/german-turkish/search?source=german&query=${encodeURIComponent(word)}`},
+        {name:"Tureng", url:`https://tureng.com/tr/turkce-almanca/${encodeURIComponent(word)}`},
+        {name:"Wiktionary", url:`https://en.wiktionary.org/wiki/${encodeURIComponent(word)}`},
+        {name:"Reverso", url:`https://context.reverso.net/translation/german-turkish/${encodeURIComponent(word)}`},
+        {name:"Langenscheidt", url:`https://de.langenscheidt.com/deutsch-tuerkisch/${encodeURIComponent(word)}`}
+    ];
+    let html = links.map(l=>`<div style="margin-bottom:10px;">
+        <a href="${l.url}" target="_blank" style="color:#246be6;font-weight:600;font-size:1.07em;text-decoration:none;">
+            <span style="margin-right:7px;">🔗</span>${l.name}
+        </a>
+    </div>`).join("");
+    document.getElementById("sources-links").innerHTML = html;
+    document.getElementById("sources-modal").style.display = "flex";
+};
+window.closeSourcesModal = function() { document.getElementById("sources-modal").style.display="none"; };
+
+// İstatistik modalı ve güncellemesi
+function updateStats(word) {
+    let stats = getStats();
+    stats.tarihce = stats.tarihce || {};
+    stats.tarihce[word] = (stats.tarihce[word]||0)+1;
+    stats.toplamKelime = (stats.toplamKelime||0)+1;
+    stats.okumaZamani = Date.now();
+    saveStats(stats);
+}
+window.showStatsModal = function() {
+    let stats = getStats();
+    let kelimeSay = stats.toplamKelime||0;
+    let enCok = Object.entries((stats.tarihce||{})).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    let html = `
+        <div>Toplam bakılan kelime: <b>${kelimeSay}</b></div>
+        <div>En çok bakılan kelimeler:</div>
+        <ul>
+        ${enCok.map(([k, v])=>`<li>${k} (${v} kez)</li>`).join("")}
+        </ul>
+        <div>Son okuma: ${stats.okumaZamani ? new Date(stats.okumaZamani).toLocaleString():"-"}</div>
+    `;
+    document.getElementById("stats-content").innerHTML = html;
+    document.getElementById("stats-modal").style.display = "flex";
+};
+window.closeStatsModal = function() { document.getElementById("stats-modal").style.display="none"; };
+
+// Seçili metni çevir
+window.showTranslateModal = function() {
+    let txt = window.getSelection().toString();
+    if (!txt) txt = prompt("Çevirmek istediğin metni gir:");
+    if (!txt) return;
+    let url = "https://translate.google.com/?sl=de&tl=tr&text=" + encodeURIComponent(txt) + "&op=translate";
+    document.getElementById("translate-area").innerHTML = `
+        <div style="font-size:1.08em;margin-bottom:12px;">Çevrilecek metin:<br><b>${txt}</b></div>
+        <a href="${url}" target="_blank" style="color:#226be6;font-weight:600;font-size:1.09em;text-decoration:none;">Google Translate'de Aç</a>
+    `;
+    document.getElementById("translate-modal").style.display = "flex";
+};
+window.closeTranslateModal = function() { document.getElementById("translate-modal").style.display="none"; };
+
+// Not modalı
+window.closeNoteModal = function() { document.getElementById("note-modal").style.display="none"; };
+
+// Modal kapatıcılar
+window.onclick = function(event) {
+    ["favorites-modal","sources-modal","stats-modal","note-modal","translate-modal"].forEach(id=>{
+        let m = document.getElementById(id);
+        if (event.target === m) m.style.display="none";
+    });
+};
+
+// Gece, odak, satır ilerleme gibi okuma modları için tema fonksiyonunu özelleştirebilirsin
+// ... (isteğine göre ek fonksiyonlar eklenebilir)
+</script>
+
+
+// Utility Bar Butonları (Favori, İstatistik, Alıntı)
+document.getElementById("fav-btn").onclick = showFavoritesModal;
+document.getElementById("stats-btn").onclick = showStatsModal;
+document.getElementById("quotes-btn").onclick = function() {
+  document.getElementById("quotes-modal").style.display = 'flex';
+};
