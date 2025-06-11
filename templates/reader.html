@@ -315,6 +315,14 @@ Aşağıdaki kodu <body> açıldıktan ve <div id="themebar"> ile <div id="fontb
     <button id="quotes-btn" title="Alıntılarım" style="font-size:1.08em; padding:7px 12px; border-radius:9px; border:none; background:#f5e7fd; cursor:pointer;">📖</button>
 </div>
 
+<script>
+  document.getElementById("bookshelf-btn").addEventListener("click", function() {
+    window.location.href = "{{ url_for('index', _external=True) }}";
+  });
+</script>
+
+    
+
 </div>
 
 
@@ -331,7 +339,8 @@ Aşağıdaki kodu <body> açıldıktan ve <div id="themebar"> ile <div id="fontb
         {% for page in pages %}
             <div class="page" id="page-{{ loop.index0 }}">
                 <div class="page-num">Sayfa {{ loop.index }}</div>
-                <span class="page-speaker" title="Sayfayı oku" onclick="speakPage({{ loop.index0 }})">🔊</span>
+                <span class="page-speaker" title="Sayfayı oku" onclick="speakPage({{ loop.index0 }})"
+      style="position: absolute; top: 12px; left: 16px; font-size: 20px; cursor: pointer;">🔊</span>
                 <span class="page-stop" title="Okumayı Durdur" onclick="stopSpeak()">⏹️</span>
                 {{ page|safe }}
             </div>
