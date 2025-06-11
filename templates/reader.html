@@ -338,15 +338,15 @@ Aşağıdaki kodu <body> açıldıktan ve <div id="themebar"> ile <div id="fontb
     <!-- Metin -->
     <div id="text-content" style="padding-top: 60px; position: relative;">
 
- {% for page in pages %}
-  <div class="page" id="page-{{ loop.index0 }}" style="position: relative; padding: 80px 16px 40px 16px;">
+{% for page in pages %}
+  <div class="page" id="page-{{ loop.index0 }}" style="position: relative; padding: 100px 16px 40px 16px;">
 
     <!-- ÜSTTEKİ BUTONLAR -->
-    <div style="position: absolute; top: 12px; left: 12px; display: flex; gap: 14px;">
+    <div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 28px;">
       <span class="page-speaker" title="Sayfayı oku" onclick="speakPage({{ loop.index0 }})"
-            style="font-size: 28px; padding: 6px; cursor: pointer;">🔊</span>
+            style="font-size: 30px; padding: 10px; cursor: pointer;">🔊</span>
       <span class="page-stop" title="Okumayı Durdur" onclick="stopSpeak()"
-            style="font-size: 28px; padding: 6px; cursor: pointer;">⏹️</span>
+            style="font-size: 30px; padding: 10px; cursor: pointer;">⏹️</span>
     </div>
 
     <!-- SAYFA İÇERİĞİ -->
@@ -358,6 +358,7 @@ Aşağıdaki kodu <body> açıldıktan ve <div id="themebar"> ile <div id="fontb
     </div>
   </div>
 {% endfor %}
+
 
 
 
