@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Kitaplık</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <header>
+        <h2>Almanca Kitaplık</h2>
+        <a href="/history" class="history-btn">Geçmiş</a>
+    </header>
+    <main>
+
+
+
+
+        <form action="/upload" method="post" enctype="multipart/form-data" class="upload-form">
+
+            <input type="file" name="pdf" accept=".pdf" required>
+            <button type="submit">PDF Yükle</button>
+        </form>
+
+<!-- Manuel Metin Giriş Alanı -->
+<section class="text-entry">
+    <h3>Veya kendi Almanca metnini gir:</h3>
+    <form action="/customtext" method="POST">
+        <textarea name="custom_text" rows="5" cols="60" placeholder="Almanca bir metin gir..."></textarea><br>
+        <button type="submit">Metni Göster</button>
+    </form>
+</section>
+
+
+
+
+        <section class="library">
+            <h3>Kitaplarım</h3>
+            <ul>
+                {% for book in books %}
+                    <li>
+                        <a href="{{ url_for('read', filename=book) }}"> {{ book }} </a>
+                    </li>
+                {% else %}
+                    <li>Henüz kitap yüklemedin.</li>
+                {% endfor %}
+            </ul>
+        </section>
+    </main>
+</body>
+</html>

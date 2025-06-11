@@ -1,0 +1,40 @@
+body, html { margin: 0; padding: 0; box-sizing: border-box; font-family: Georgia, Garamond, serif; }
+header { background: #1e2e38; color: #fff; padding: 12px 20px; display: flex; align-items: center; gap:10px; position: sticky; top:0; z-index:100;}
+header .back-btn, header .history-btn, header .clear-btn { color: #fff; text-decoration: none; margin-right: 15px; font-size: 1.1em; }
+header .page-indicator { margin-left: auto; font-weight: 500;}
+header form { margin-left: 10px;}
+#theme-switcher { margin-left:16px; font-size:1em;}
+.upload-form { margin: 18px 0; }
+.library ul, .history-list { list-style: none; padding: 0; }
+.library li, .history-list li { margin: 8px 0; }
+.library a { text-decoration: none; color: #1e2e38; font-size: 1.1em; }
+.library a:hover { text-decoration: underline; }
+.reader-bg { background: #f8e8d0; }
+.scroll-book { max-width: 780px; margin: 22px auto; }
+.page-block { margin: 36px auto; background: #fffbe6; box-shadow: 0 8px 32px 0 rgba(44,40,14,0.10); border-radius: 16px; padding: 30px 14px 38px 14px; position: relative; min-height:250px;}
+.page-block .page-num { position: absolute; left:20px; top:13px; color:#cab272; font-size:1.08em; }
+.page-content { margin-top:32px; font-size: 1.17em; line-height: 2.1; text-align: justify; }
+.word { cursor: pointer; border-radius: 5px; padding: 2px 5px; transition: background 0.13s; }
+.word:hover { background: #e9dfc2; }
+.popup { 
+    position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+    background: #fffbe6; border: 1.5px solid #dac19e; border-radius: 13px;
+    box-shadow: 0 3px 24px 0 rgba(60,60,0,0.12);
+    padding: 15px 18px; z-index: 5000; display: none; min-width: 210px; max-width: 96vw; font-size: 1.08em;
+}
+@media (max-width: 600px) {
+    .scroll-book { padding:0 2vw;}
+    .page-block { padding:14px 2vw 30px 2vw;}
+    .popup { font-size: 1em; min-width: 45vw; }
+    header { font-size: 1em; padding: 10px 6px; }
+}
+.reader-bg.theme-night { background: #222831; }
+.theme-night .page-block { background: #333a43; color: #fffbe6; box-shadow:0 6px 26px 0 rgba(0,0,0,0.17);}
+.theme-night .word:hover { background:#494d57;}
+.theme-night .popup { background:#383f47; color:#fffbe6; border-color:#5b7d99;}
+.reader-bg.theme-white { background: #fff; }
+.theme-white .page-block { background: #fff; }
+.reader-bg.theme-sepia { background: #f3e6c6; }
+.theme-sepia .page-block { background: #f7ebd2;}
+.reader-bg.theme-gray { background: #f5f6f7;}
+.theme-gray .page-block { background: #f7f9fa;}
