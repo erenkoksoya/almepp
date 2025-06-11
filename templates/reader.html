@@ -310,10 +310,11 @@ Aşağıdaki kodu <body> açıldıktan ve <div id="themebar"> ile <div id="fontb
 <!-- Sağ altta utility bar -->
 <div id="utility-bar">
 <div id="utility-bar" style="position:fixed; right:24px; bottom:60px; z-index:1200; background:#fff; border-radius:14px; box-shadow:0 2px 8px #b2b8c766; display:flex; flex-direction:column; gap:10px; padding:10px 8px; opacity:0.97;">
-    <button id="bookshelf-btn" title="Kitaplık" style="font-size:1.08em; padding:7px 12px; border-radius:9px; border:none; background:#ecf4ff; cursor:pointer;">📚</button>
+    <button id="bookshelf-btn" title="Kitaplık" onclick="window.location.href='/'" style="font-size:1.08em; padding:7px 12px; border-radius:9px; border:none; background:#ecf4ff; cursor:pointer;">📚</button>
     <button id="fav-btn" title="Favorilerim" style="font-size:1.08em; padding:7px 12px; border-radius:9px; border:none; background:#fffbe3; cursor:pointer;">⭐</button>
     <button id="quotes-btn" title="Alıntılarım" style="font-size:1.08em; padding:7px 12px; border-radius:9px; border:none; background:#f5e7fd; cursor:pointer;">📖</button>
 </div>
+
 
 <script>
   document.getElementById("bookshelf-btn").addEventListener("click", function() {
