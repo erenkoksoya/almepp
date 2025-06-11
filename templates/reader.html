@@ -338,26 +338,68 @@ Aşağıdaki kodu <body> açıldıktan ve <div id="themebar"> ile <div id="fontb
     <!-- Metin -->
     <div id="text-content" style="padding-top: 60px; position: relative;">
 
-{% for page in pages %}
-  <div class="page" id="page-{{ loop.index0 }}" style="position: relative; padding: 100px 16px 40px 16px;">
+<!-- Sabit Üst Bar -->
+<div style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #fdfdfd;
+    z-index: 1000;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+">
+  <span class="page-speaker" title="Sayfayı oku" onclick="speakPage(currentPageIndex)"
+        style="font-size: 22px; padding: 8px; cursor: pointer;">🔊</span>
 
-    <!-- ÜSTTEKİ BUTONLAR -->
-    <div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 28px;">
-      <span class="page-speaker" title="Sayfayı oku" onclick="speakPage({{ loop.index0 }})"
-            style="font-size: 30px; padding: 10px; cursor: pointer;">🔊</span>
-      <span class="page-stop" title="Okumayı Durdur" onclick="stopSpeak()"
-            style="font-size: 30px; padding: 10px; cursor: pointer;">⏹️</span>
+  <span class="page-stop" title="Okumayı Durdur" onclick="stopSpeak()"
+        style="font-size: 22px; padding: 8px; cursor: pointer;">⏹️</span>
+</div>
+
+<!-- Sayfa İçeriği -->
+<div style="margin-top: 60px;">
+  {% for page in pages %}
+    <div class="page" id="page-{{ loop.index0 }}" style="padding: 20px 16px 60px 16px;">
+
+      {{ page|safe }}
+
+      <div style="text-align: center; margin-top: 40px; font-size: 15px; color: #888;">
+        Sayfa {{ loop.index }}
+      </div>
     </div>
+  {% endfor %}
+</div>
 
-    <!-- SAYFA İÇERİĞİ -->
-    {{ page|safe }}
+<!-- JS: Sayfa kontrolü ve konuşma -->
+<script>
+  let currentPageIndex = 0;
 
-    <!-- ALTTAKİ SAYFA NUMARASI -->
-    <div style="text-align: center; margin-top: 40px; font-size: 15px; color: #888;">
-      Sayfa {{ loop.index }}
-    </div>
-  </div>
-{% endfor %}
+  function updatePageNumberDisplay(index) {
+    currentPageIndex = index;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    updatePageNumberDisplay(0);
+  });
+
+  function speakPage(index) {
+    const page = document.getElementById('page-' + index);
+    if (page) {
+      const text = page.innerText || page.textContent;
+      const utterance = new SpeechSynthesisUtterance(text);
+      speechSynthesis.speak(utterance);
+    }
+  }
+
+  function stopSpeak() {
+    speechSynthesis.cancel();
+  }
+</script>
+
 
 
 
