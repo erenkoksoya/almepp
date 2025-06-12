@@ -235,11 +235,10 @@ window.addEventListener('DOMContentLoaded', () => {
     if (text) {
         const container = document.getElementById('textContainer');
         if (container) {
-            container.innerHTML = text
-                .split(/\s+/)
-                .map(w => `<span class="word">${w}</span>`)
-                .join(" ");
-        }
+    container.innerHTML = text
+        .replace(/\n/g, "<br>")  // Satır sonlarını HTML'de görünür kılar
+        .replace(/\b(\w+)\b/g, '<span class="word">$1</span>');  // Kelimeleri span'le sar
+}
     }
 });
 
