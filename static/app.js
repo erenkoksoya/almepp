@@ -184,25 +184,37 @@ document.addEventListener("DOMContentLoaded", function() {
 function handleFileLocal() {
     const fileInput = document.getElementById('fileInput');
     const file = fileInput.files[0];
-    if (!file) {
-        alert("Lütfen bir dosya seçin.");
+    if (!file || !file.type.includes("pdf")) {
+        alert("Lütfen bir PDF dosyası seçin.");
         return;
     }
 
     const reader = new FileReader();
-    reader.onload = function (e) {
-        const content = e.target.result;
+    reader.onload = function(e) {
+        const typedarray = new Uint8Array(e.target.result);
 
-        // localStorage'a kaydet
-        localStorage.setItem('last_text', content);
-        alert("Dosya başarıyla tarayıcıya kaydedildi!");
+        pdfjsLib.getDocument(typedarray).promise.then(async function(pdf) {
+            let fullText = "";
 
-        // Okuyucu sayfasına yönlendir
-        window.location.href = "/reader";
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                const strings = content.items.map(item => item.str).join(" ");
+                fullText += strings + "\n\n";
+            }
+
+            localStorage.setItem("last_text", fullText);
+            alert("PDF başarıyla yüklendi!");
+            window.location.href = "/reader";
+        }).catch(function(error) {
+            console.error("PDF okuma hatası:", error);
+            alert("PDF dosyası okunamadı.");
+        });
     };
 
-    reader.readAsText(file);
+    reader.readAsArrayBuffer(file); // PDF için özel okuma tipi
 }
+
 
 
 
