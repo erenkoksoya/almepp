@@ -67,6 +67,13 @@ def read(filename):
     pages = extract_pdf_pages(pdf_path)
     return render_template("reader.html", book=filename, pages=pages, page_count=len(pages))
 
+
+@app.route("/reader")
+def reader_local():
+    return render_template("reader.html", book="Yerel Kitap", pages=[], page_count=1)
+
+
+
 @app.route("/customtext", methods=["POST"])
 def custom_text():
     text = request.form.get("custom_text", "")
