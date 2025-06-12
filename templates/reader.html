@@ -342,17 +342,9 @@ Aşağıdaki kodu <body> açıldıktan ve <div id="themebar"> ile <div id="fontb
   <div class="page" id="page-{{ loop.index0 }}" style="position: relative; padding: 60px 16px 60px 16px;">
 
     <!-- SAYFA ÜSTÜ BUTONLAR -->
-    <div style="
-        position: absolute;
-        top: 10px;
-        left: 16px;
-        display: flex;
-        gap: 16px;
-        z-index: 10;
-    ">
+    <div style="position: absolute; top: -40px; left: 0; width: 100%; display: flex; justify-content: space-between; padding: 0 16px;">
       <span class="page-speaker" title="Sayfayı oku" onclick="speakPage({{ loop.index0 }})"
             style="font-size: 22px; padding: 6px; cursor: pointer;">🔊</span>
-
       <span class="page-stop" title="Okumayı Durdur" onclick="stopSpeak()"
             style="font-size: 22px; padding: 6px; cursor: pointer;">⏹️</span>
     </div>
@@ -360,13 +352,13 @@ Aşağıdaki kodu <body> açıldıktan ve <div id="themebar"> ile <div id="fontb
     <!-- SAYFA İÇERİĞİ -->
     {{ page|safe }}
 
-    <!-- ALTTAKİ SAYFA NUMARASI -->
+    <!-- SAYFA NUMARASI -->
     <div style="text-align: center; margin-top: 40px; font-size: 15px; color: #888;">
       Sayfa {{ loop.index }}
     </div>
-
   </div>
 {% endfor %}
+
 
 
 <!-- JS: Sayfa kontrolü ve konuşma -->
