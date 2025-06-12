@@ -202,7 +202,7 @@ function handleFileLocal() {
                 const strings = content.items.map(item => item.str).join(" ");
                 fullText += strings + "\n\n";
             }
-
+            localStorage.setItem("last_title", file.name);
             localStorage.setItem("last_text", fullText);
             alert("PDF başarıyla yüklendi!");
             window.location.href = "/reader";
