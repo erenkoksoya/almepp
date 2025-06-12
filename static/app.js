@@ -235,16 +235,11 @@ window.addEventListener('DOMContentLoaded', () => {
     if (text) {
         const container = document.getElementById('textContainer');
         if (container) {
-            container.innerText = text;
-
-            // Eğer metin kelimeleştirilecekse:
-            // parseAndDisplayWords(text); // varsa bu fonksiyonu çağır
+            container.innerHTML = text
+                .split(/\s+/)
+                .map(w => `<span class="word">${w}</span>`)
+                .join(" ");
         }
     }
 });
-
-
-
-
-}
 
