@@ -337,33 +337,23 @@ Aşağıdaki kodu <body> açıldıktan ve <div id="themebar"> ile <div id="fontb
     <div id="current-page-label" style="display:none;"></div>
     <!-- Metin -->
     <div id="text-content" style="padding-top: 60px; position: relative;">
-{% for page in pages %}
-  <div class="page" id="page-{{ loop.index0 }}" style="position: relative; padding: 60px 16px 60px 16px;">
 
-    <!-- HER SAYFANIN ÜSTÜNE GÖMÜLÜ BUTONLAR -->
-    <div style="
-        position: absolute;
-        top: 12px;
-        left: 0;
-        width: 100%;
-        max-width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 16px;
-        box-sizing: border-box;
-    ">
-      <!-- SOLDA HOPARLÖR -->
-      <span class="page-speaker" title="Sayfayı oku" onclick="speakPage({{ loop.index0 }})"
-            style="font-size: 24px; padding: 6px; cursor: pointer;">🔊</span>
 
-      <!-- SAĞDA DURDUR -->
-      <span class="page-stop" title="Okumayı Durdur" onclick="stopSpeak()"
-            style="font-size: 24px; padding: 6px; cursor: pointer;">⏹️</span>
-    </div>
+
+
+        {% for page in pages %}
+  <div class="page" id="page-{{ loop.index0 }}" style="position: relative; padding: 70px 16px 60px 16px;">
+
+    <!-- HOPARLÖR: Sol Üst -->
+    <span class="page-speaker" title="Sayfayı oku" onclick="speakPage({{ loop.index0 }})"
+          style="position: absolute; top: 16px; left: 16px; font-size: 24px; padding: 6px; cursor: pointer; z-index: 10;">🔊</span>
+
+    <!-- DURDUR: Sağ Üst -->
+    <span class="page-stop" title="Okumayı Durdur" onclick="stopSpeak()"
+          style="position: absolute; top: 16px; right: 16px; font-size: 24px; padding: 6px; cursor: pointer; z-index: 10;">⏹️</span>
 
     <!-- SAYFA İÇERİĞİ -->
-    <div style="margin-top: 40px;">
+    <div style="margin-top: 20px;">
       {{ page|safe }}
     </div>
 
@@ -371,8 +361,10 @@ Aşağıdaki kodu <body> açıldıktan ve <div id="themebar"> ile <div id="fontb
     <div style="text-align: center; margin-top: 40px; font-size: 15px; color: #888;">
       Sayfa {{ loop.index }}
     </div>
+
   </div>
 {% endfor %}
+
 
 
 
