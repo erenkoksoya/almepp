@@ -181,6 +181,32 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
+function handleFileLocal() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    if (!file) {
+        alert("Lütfen bir dosya seçin.");
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const content = e.target.result;
+
+        // localStorage'a kaydet
+        localStorage.setItem('last_text', content);
+        alert("Dosya başarıyla tarayıcıya kaydedildi!");
+
+        // Okuyucu sayfasına yönlendir
+        window.location.href = "/reader";
+    };
+
+    reader.readAsText(file);
+}
+
+
+
+
 // =================== MODAL GENEL KAPATICI ===================
 window.onclick = function(event) {
     [
