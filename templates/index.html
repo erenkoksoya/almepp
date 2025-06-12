@@ -69,5 +69,25 @@
 </section>
 
     </main>
+
+    
+  <script>
+window.addEventListener("DOMContentLoaded", () => {
+    const list = document.getElementById("local-library");
+    const title = localStorage.getItem("last_title");
+
+    if (title && list) {
+        const li = document.createElement("li");
+        const link = document.createElement("a");
+        link.href = "/reader";
+        link.textContent = title;
+        li.appendChild(link);
+        list.appendChild(li);
+    }
+});
+</script>
+
+
+    
 </body>
 </html>
