@@ -46,19 +46,28 @@
 
 
 
+<!-- Sunucuya ait kitaplar -->
+<section class="library">
+    <h3>📂 Sunucu Kitapları</h3>
+    <ul>
+        {% for book in books %}
+            <li>
+                <a href="{{ url_for('read', filename=book) }}"> {{ book }} </a>
+            </li>
+        {% else %}
+            <li>Henüz kitap yüklemedin.</li>
+        {% endfor %}
+    </ul>
+</section>
 
-        <section class="library">
-            <h3>Kitaplarım</h3>
-            <ul>
-                {% for book in books %}
-                    <li>
-                        <a href="{{ url_for('read', filename=book) }}"> {{ book }} </a>
-                    </li>
-                {% else %}
-                    <li>Henüz kitap yüklemedin.</li>
-                {% endfor %}
-            </ul>
-        </section>
+<!-- Tarayıcı belleğindeki kitaplar -->
+<section class="library">
+    <h3>💾 Yerel Kitaplar</h3>
+    <ul id="local-library">
+        <!-- JS ile doldurulacak -->
+    </ul>
+</section>
+
     </main>
 </body>
 </html>
