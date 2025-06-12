@@ -217,6 +217,21 @@ window.onclick = function(event) {
         if (event.target === m) m.style.display = "none";
     });
 
+    // =================== LOCAL STORAGE'DAN METNİ YÜKLE ===================
+window.addEventListener('DOMContentLoaded', () => {
+    const text = localStorage.getItem('last_text');
+    if (text) {
+        const container = document.getElementById('textContainer');
+        if (container) {
+            container.innerText = text;
+
+            // Eğer metin kelimeleştirilecekse:
+            // parseAndDisplayWords(text); // varsa bu fonksiyonu çağır
+        }
+    }
+});
+
+
 
 
 }
