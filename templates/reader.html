@@ -337,29 +337,35 @@ Aşağıdaki kodu <body> açıldıktan ve <div id="themebar"> ile <div id="fontb
     <div id="current-page-label" style="display:none;"></div>
     <!-- Metin -->
     <div id="text-content" style="padding-top: 60px; position: relative;">
-
 {% for page in pages %}
-  <div class="page" id="page-{{ loop.index0 }}" style="position: relative; padding: 80px 16px 60px 16px;">
+  <div class="page" id="page-{{ loop.index0 }}" style="position: relative; padding: 60px 16px 60px 16px;">
 
-    <!-- SAYFA ÜSTÜ BUTONLAR -->
+    <!-- HER SAYFANIN ÜSTÜNE GÖMÜLÜ BUTONLAR -->
     <div style="
         position: absolute;
         top: 12px;
         left: 0;
         width: 100%;
+        max-width: 100%;
         display: flex;
         justify-content: space-between;
+        align-items: center;
         padding: 0 16px;
-        z-index: 10;
+        box-sizing: border-box;
     ">
+      <!-- SOLDA HOPARLÖR -->
       <span class="page-speaker" title="Sayfayı oku" onclick="speakPage({{ loop.index0 }})"
-            style="font-size: 22px; padding: 6px; cursor: pointer;">🔊</span>
+            style="font-size: 24px; padding: 6px; cursor: pointer;">🔊</span>
+
+      <!-- SAĞDA DURDUR -->
       <span class="page-stop" title="Okumayı Durdur" onclick="stopSpeak()"
-            style="font-size: 22px; padding: 6px; cursor: pointer;">⏹️</span>
+            style="font-size: 24px; padding: 6px; cursor: pointer;">⏹️</span>
     </div>
 
     <!-- SAYFA İÇERİĞİ -->
-    {{ page|safe }}
+    <div style="margin-top: 40px;">
+      {{ page|safe }}
+    </div>
 
     <!-- SAYFA NUMARASI -->
     <div style="text-align: center; margin-top: 40px; font-size: 15px; color: #888;">
@@ -367,6 +373,7 @@ Aşağıdaki kodu <body> açıldıktan ve <div id="themebar"> ile <div id="fontb
     </div>
   </div>
 {% endfor %}
+
 
 
 
